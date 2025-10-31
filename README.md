@@ -149,7 +149,10 @@ sensor:
         - calibrate_linear:
             - 200 -> 0    # Dry
             - 2000 -> 100  # Wet
-        - lambda: return min(100.0, max(0.0, x));  # Clamp to 0-100%
+        - lambda: |-
+            if (x < 0.0) return 0.0;
+            if (x > 100.0) return 100.0;
+            return x;
       unit_of_measurement: "%"
 ```
 
