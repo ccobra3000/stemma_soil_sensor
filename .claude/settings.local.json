@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: ESPHome STEMMA Soil Sensor component\n\nAdd custom ESPHome component for Adafruit STEMMA Soil Sensor using\nSeesaw I2C protocol. Includes temperature and moisture sensing with\nconfigurable polling intervals.\n\nFiles:\n- __init__.py: Component namespace definition\n- sensor.py: ESPHome sensor platform integration\n- stemma_soil_sensor.h: C++ implementation with I2C communication\n- CLAUDE.md: Component documentation and usage guide\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

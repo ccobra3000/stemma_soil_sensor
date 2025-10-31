@@ -58,13 +58,13 @@ class StemmaSoilSensor : public PollingComponent, public i2c::I2CDevice {
             this->status_set_error();
             return;
         }
-        ESP_LOGD(TAG, "Reset command sent successfully");
-        delay(500);
+        ESP_LOGD(TAG, "Reset command sent successfully, waiting for device to restart...");
+        delay(1000);  // Seesaw needs time to reset
 
         // Check hardware ID
         ESP_LOGD(TAG, "Reading hardware ID (0x%02X, 0x%02X)...", SEESAW_STATUS_BASE, SEESAW_STATUS_HW_ID);
         uint8_t hw_id = 0;
-        if (!this->read_register(SEESAW_STATUS_BASE, SEESAW_STATUS_HW_ID, &hw_id, 1)) {
+        if (!this->read_register(SEESAW_STATUS_BASE, SEESAW_STATUS_HW_ID, &hw_id, 1, 2000)) {
             ESP_LOGE(TAG, "Failed to read hardware ID - I2C communication error");
             this->status_set_error();
             return;
@@ -124,8 +124,8 @@ class StemmaSoilSensor : public PollingComponent, public i2c::I2CDevice {
 
     float read_temperature() {
         uint8_t buf[4];
-        if (!this->read_register(SEESAW_STATUS_BASE, SEESAW_STATUS_TEMP, buf, 4, 1000)) {
-            ESP_LOGW("stemma_soil_sensor", "Failed to read temperature");
+        if (!this->read_register(SEESAW_STATUS_BASE, SEESAW_STATUS_TEMP, buf, 4, 3000)) {
+            ESP_LOGW(TAG, "Failed to read temperature");
             return NAN;
         }
 
@@ -142,15 +142,15 @@ class StemmaSoilSensor : public PollingComponent, public i2c::I2CDevice {
         // Retry until valid reading
         int attempts = 0;
         while (ret == 65535 && attempts < 5) {
-            delay(1);
-            if (this->read_register(SEESAW_TOUCH_BASE, SEESAW_TOUCH_CHANNEL_OFFSET + pin, buf, 2, 1000)) {
+            delay(5);  // Small delay between attempts
+            if (this->read_register(SEESAW_TOUCH_BASE, SEESAW_TOUCH_CHANNEL_OFFSET + pin, buf, 2, 3000)) {
                 ret = ((uint16_t)buf[0] << 8) | buf[1];
             }
             attempts++;
         }
 
         if (ret == 65535) {
-            ESP_LOGW("stemma_soil_sensor", "Failed to read moisture after %d attempts", attempts);
+            ESP_LOGW(TAG, "Failed to read moisture after %d attempts", attempts);
             return 0;
         }
 
