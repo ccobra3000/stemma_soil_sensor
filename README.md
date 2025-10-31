@@ -145,6 +145,7 @@ sensor:
         - lambda: return x * 9.0/5.0 + 32.0;  # Convert to Fahrenheit
     moisture:
       name: "Soil Moisture"
+      unit_of_measurement: "%"
       filters:
         - calibrate_linear:
             - 200 -> 0    # Dry
@@ -153,7 +154,6 @@ sensor:
             if (x < 0.0) return 0.0;
             if (x > 100.0) return 100.0;
             return x;
-      unit_of_measurement: "%"
 ```
 
 ### Multiple Sensors
